@@ -1,4 +1,8 @@
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "main.h"
+#define BUF_SIZE 1024
 
 /**
 * _printf - function that works like printf
@@ -10,6 +14,12 @@
 int _print(const char *format, ...)
 {
 	va_list args;
+	char buffer[BUF_SIZE];
+
+	int count = 0;
+	int printed = 0;
+	int buf = 0;
+
 	va_start(args, format);
 
 	while (*format)
@@ -19,28 +29,62 @@ int _print(const char *format, ...)
 			format++;
 			if (*format == '%')
 			{
-				_putchar('%');
-				counter++;
+				buffer[buf++] = '%';
+				if (buf == BUF_SIZE)
+				{
+					print_buf(buffer, &buf);
+					count += buf;
+				}
 			}
 			else if (*format == 'c')
 			{
 				int c = va_arg(args, int);
-				_putchar(c);
-				counter++;
+
+				buffer[buf++] = c;
+				if (buf == BUF_SIZE)
+				{
+					print_buf(buffer, &buf);
+					count += buf;
+				}
 			}
 			else if (*format == 's')
 			{
-				char *s = va_arg(args, char*);
+				char *s = va_arg(args, char *);
+
 				while (*s)
 				{
-					_putchar(*s);
+					buffer[buf++] = *s;
 					s++;
-					counter++;
+					if (buf == BUF_SIZE)
+					{
+						print_buf(buffer, &buf);
+						count += buf;
+					}
 				}
 			}
-			format++;
+			else if (*format == 'd' || *format == 'i')
+			{
+				int val = va_arg(args, int);
+
+				printed = print_int(val);
+				count += printed;
+			}
 		}
-		va_end(args);
+		else
+		{
+			buffer[buf++] = *format;
+
+			if (buf == BUF_SIZE)
+			{
+				print_buf(buffer, &buf);
+				count += buf;
+			}
+		}
+		format++;
 	}
-	return counter;
+	print_buf(buffer, &buf);
+	count += buf;
+
+	va_end(args);
+	return (count);
 }
