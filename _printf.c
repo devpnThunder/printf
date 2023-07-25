@@ -11,14 +11,9 @@
 * Return: the counter
 */
 
-int _print(const char *format, ...)
+int _printf(const char *format, ...)
 {
 	va_list args;
-	char buffer[BUF_SIZE];
-
-	int count = 0;
-	int printed = 0;
-	int buf = 0;
 
 	va_start(args, format);
 
@@ -29,62 +24,27 @@ int _print(const char *format, ...)
 			format++;
 			if (*format == '%')
 			{
-				buffer[buf++] = '%';
-				if (buf == BUF_SIZE)
-				{
-					print_buf(buffer, &buf);
-					count += buf;
-				}
+				_putchar('%');
+				counter++;
 			}
 			else if (*format == 'c')
 			{
-				int c = va_arg(args, int);
+				char c = va_arg(args, int);
 
-				buffer[buf++] = c;
-				if (buf == BUF_SIZE)
-				{
-					print_buf(buffer, &buf);
-					count += buf;
-				}
+				_putchar(c);
 			}
 			else if (*format == 's')
 			{
-				char *s = va_arg(args, char *);
+				char *s = va_arg(args, char*);
 
-				while (*s)
-				{
-					buffer[buf++] = *s;
-					s++;
-					if (buf == BUF_SIZE)
-					{
-						print_buf(buffer, &buf);
-						count += buf;
-					}
-				}
+				_putchar(s);
 			}
-			else if (*format == 'd' || *format == 'i')
-			{
-				int val = va_arg(args, int);
-
-				printed = print_int(val);
-				count += printed;
-			}
+			format++;
 		}
 		else
 		{
-			buffer[buf++] = *format;
-
-			if (buf == BUF_SIZE)
-			{
-				print_buf(buffer, &buf);
-				count += buf;
-			}
+			_putchar(*format);
 		}
-		format++;
 	}
-	print_buf(buffer, &buf);
-	count += buf;
-
 	va_end(args);
-	return (count);
 }
